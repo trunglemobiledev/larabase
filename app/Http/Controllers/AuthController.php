@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 use Exception;
 
 class AuthController extends Controller
@@ -17,12 +18,21 @@ class AuthController extends Controller
     public function __construct()
     {
         //except: không thuộc về auth token
-        $this->middleware('auth:api', ['except' => ['login', 'register']]);
+        // $this->middleware('auth:api', ['except' => ['login', 'register']]);
+         $this->middleware('jwt.verify', ['except' => ['login', 'register']]);
     }
 
     public function register(Request $request)
     {
         try {
+            $validator = Validator::make($request->all(), [
+                'name' => 'required|string|max:255',
+                'email' => 'required|string|email|max:255|unique:users',
+                'password' => 'required|string|min:6',
+            ]);
+            if ($validator->fails()) {
+                return $this->jsonError($validator->errors()->toArray());
+            }
             $user = User::create([
                 'name' => $request->name,
                 'email' => $request->email,

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Exception;
+use App\Services\QueryService;
 
 class UserController extends Controller
 {
@@ -16,7 +17,7 @@ class UserController extends Controller
     public function __construct()
     {
         //except: không thuộc về auth token
-        $this->middleware('auth:api', ['except' => []]);
+        $this->middleware('jwt.verify', ['except' => []]);
     }
 
     /**
@@ -24,12 +25,31 @@ class UserController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
         try {
-            $users = User::all();
-            return $this->jsonData($users);
-        } catch (Exception $e) {
+            $limit = $request->get('limit', 25);
+            $ascending = (int)$request->get('ascending', 0);
+            $orderBy = $request->get('orderBy', '');
+            $search = $request->get('search', '');
+            $betweenDate = $request->get('updated_at', []);
+
+            $queryService = new QueryService(new User);
+            $queryService->select = [];
+            $queryService->columnSearch = ['name'];
+            $queryService->withRelationship = [];
+            $queryService->search = $search;
+            $queryService->betweenDate = $betweenDate;
+            $queryService->limit = $limit;
+            $queryService->ascending = $ascending;
+            $queryService->orderBy = $orderBy;
+
+            $query = $queryService->queryTable();
+            $query = $query->paginate($limit);
+            $users = $query->toArray();
+
+            return $this->jsonTable($users);
+        } catch (\Exception $e) {
             return $this->jsonError($e);
         }
     }
@@ -59,7 +79,8 @@ class UserController extends Controller
     public function show($id)
     {
         try {
-            $users = User::all();
+            $users = User::find($id);
+            $users->userDetail;
             return $this->jsonData($users);
         } catch (Exception $e) {
             return $this->jsonError($e);

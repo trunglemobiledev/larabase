@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\UserDetailController;
 
 /*
 |--------------------------------------------------------------------------
@@ -29,10 +30,19 @@ Route::group([
     Route::post('logout', [AuthController::class, 'logout']);
     Route::post('refresh', [AuthController::class, 'refresh']);
     Route::post('me', [AuthController::class, 'me']);
-    //user
+    //User
     Route::resource('user', UserController::class);
+    Route::resource('user-detail', UserDetailController::class);
+    //Game
+
+    //Coin
 });
 
+Route::any('{any}', function(){
+    return response()->json([
+        'status' => false,
+        'message' => 'Resource not found'], 404);
+})->where('any', '.*');
 
 
 
