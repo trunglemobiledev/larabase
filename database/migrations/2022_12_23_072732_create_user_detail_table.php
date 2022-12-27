@@ -23,9 +23,11 @@ class CreateUserDetailTable extends Migration
             $table->string('CDDD', 191)->nullable();
             $table->date('ngayCapCCCD')->nullable();
             $table->string('noiCapCCCD', 191)->nullable();
-            $table->string('anhDaiDien')->nullable();
+            $table->longText('anhDaiDien')->nullable();
             $table->bigInteger('gCoin')->nullable()->default(0);
             $table->bigInteger('vip')->nullable()->default(1);
+            $table->bigInteger('created_by')->nullable();
+            $table->bigInteger('updated_by')->nullable();
             $table->timestamps();
         });
     }

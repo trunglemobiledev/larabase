@@ -5,7 +5,9 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserDetailController;
-
+// API V1
+use App\Http\Controllers\Api\V1\PostCategoryController;
+use App\Http\Controllers\Api\V1\PostController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -33,6 +35,12 @@ Route::group([
     //User
     Route::resource('user', UserController::class);
     Route::resource('user-detail', UserDetailController::class);
+
+    //Home
+        //Post category
+        Route::resource('post-category', PostCategoryController::class);
+        //Post
+        Route::resource('post', PostController::class);
     //Game
 
     //Coin

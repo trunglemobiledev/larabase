@@ -23,6 +23,8 @@ class CreateUsersTable extends Migration
             $table->string('server_ip', 191)->nullable();
             $table->string('uid', 191)->nullable();
             $table->boolean('verify', 191)->nullable()->default(false);
+            $table->bigInteger('created_by')->nullable();
+            $table->bigInteger('updated_by')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

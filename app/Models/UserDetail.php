@@ -24,8 +24,6 @@ class UserDetail extends Model
         'anhDaiDien',
         'gCoin',
         'idUser',
-        'created_by',
-        'updated_by',
         'vip',
     ];
 

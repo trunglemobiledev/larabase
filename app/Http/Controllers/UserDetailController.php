@@ -38,8 +38,8 @@ class UserDetailController extends Controller
     public function store(Request $request)
     {
         try {
-            $user = User::create($request->all());
-            return $this->jsonData($user);
+            $userDetail = UserDetail::create($request->all());
+            return $this->jsonData($userDetail);
         } catch (Exception $e) {
             return $this->jsonError($e);
         }
@@ -63,9 +63,14 @@ class UserDetailController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request,UserDetail $userDetail)
     {
-        //
+        try {
+            $userDetail->update($request->all());
+            return $this->jsonData($userDetail);
+        } catch (Exception $e) {
+            return $this->jsonError($e);
+        }
     }
 
     /**
