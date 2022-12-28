@@ -29,6 +29,7 @@ class AuthController extends Controller
                 'name' => 'required|string|max:255',
                 'email' => 'required|string|email|max:255|unique:users',
                 'password' => 'required|string|min:6',
+                'role' => 'required|string',
             ]);
             if ($validator->fails()) {
                 return $this->jsonError($validator->errors()->toArray());
@@ -38,6 +39,7 @@ class AuthController extends Controller
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
             ]);
+            $role = $user->assignRole($request->role);
             return $this->jsonData($user);
         } catch (Exception $e) {
             return $this->jsonError($e);
@@ -82,7 +84,12 @@ class AuthController extends Controller
     public function me()
     {
         try {
-            return $this->jsonData(auth()->user());
+            $user = auth()->user();
+
+            $roles = $user->getRoleNames();
+            $permission = $user->getAllPermissions();
+
+            return $this->jsonData($user);
         } catch (Exception $e) {
             return $this->jsonError($e);
         }

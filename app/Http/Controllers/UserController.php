@@ -6,25 +6,16 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Exception;
 use App\Services\QueryService;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
-    /**
-     * Create a new AuthController instance.
-     *
-     * @return void
-     */
     public function __construct()
     {
-        //except: không thuộc về auth token
         $this->middleware('jwt.verify', ['except' => []]);
     }
 
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index(Request $request)
     {
         try {
@@ -54,47 +45,45 @@ class UserController extends Controller
         }
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
         try {
-            $user = User::create($request->all());
-            return $this->jsonData($user);
+            $validator = Validator::make($request->all(), [
+                'name' => 'required|string|max:255',
+                'email' => 'required|string|email|max:255|unique:users',
+                'password' => 'required|string|min:6',
+            ]);
+            if ($validator->fails()) {
+                return $this->jsonValidate($validator->errors());
+            }
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+            ]);
+            $role = $user->assignRole($request->role);
+            if ($user) {
+                return $this->jsonData($user);
+            }
         } catch (Exception $e) {
             return $this->jsonError($e);
         }
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param int $id
-     * @return \Illuminate\Http\Response
-     */
     public function show($id)
     {
         try {
             $users = User::find($id);
             $users->userDetail;
+            $roles = $users->getRoleNames();
+            $permission = $users->getAllPermissions();
             return $this->jsonData($users);
         } catch (Exception $e) {
             return $this->jsonError($e);
         }
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @param int $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request,User $user)
+    public function update(Request $request, User $user)
     {
         try {
             $user->update($request->all());
@@ -104,12 +93,6 @@ class UserController extends Controller
         }
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param int $id
-     * @return \Illuminate\Http\Response
-     */
     public function destroy(User $user)
     {
         try {
@@ -118,5 +101,15 @@ class UserController extends Controller
         } catch (Exception $e) {
             return $this->jsonError($e);
         }
+    }
+
+    public function changeRole($id,Request $request)
+    {
+        $user = User::find($id);
+        if ($user) {
+            $user->syncRoles($request->roles);
+            return $this->jsonMessage('Roles changed successfully!');
+        }
+        return $this->jsonError('Sorry! User not found');
     }
 }

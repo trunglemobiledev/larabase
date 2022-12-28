@@ -7,10 +7,8 @@ use JWTAuth;
 use Exception;
 use Tymon\JWTAuth\Http\Middleware\BaseMiddleware;
 
-
 class JwtMiddleware extends BaseMiddleware
 {
-
 
     /**
      * Handle an incoming request.
@@ -21,7 +19,6 @@ class JwtMiddleware extends BaseMiddleware
      */
     public function handle($request, Closure $next)
     {
-
         try {
             $user = JWTAuth::parseToken()->authenticate();
         } catch (Exception $e) {
