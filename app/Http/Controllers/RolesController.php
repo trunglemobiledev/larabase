@@ -29,7 +29,7 @@ class RolesController extends Controller
         try {
             // store user information
             $role = Role::create([
-                'guard_name' => 'web',
+                'guard_name' => 'api',
                 'name' => $request->name,
             ]);
 
