@@ -14,6 +14,7 @@ class UserController extends Controller
     public function __construct()
     {
         $this->middleware('jwt.verify', ['except' => []]);
+//        $this->middleware('permission.index', ['only' => ['index','show']]);
     }
 
     public function index(Request $request)

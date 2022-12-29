@@ -86,6 +86,7 @@ class AuthController extends Controller
         try {
             $user = auth()->user();
 
+            $user->userDetail;
             $roles = $user->getRoleNames();
             $permission = $user->getAllPermissions();
 
