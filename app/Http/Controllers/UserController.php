@@ -104,12 +104,22 @@ class UserController extends Controller
         }
     }
 
-    public function changeRole($id,Request $request)
+    public function changeRole($id, Request $request)
     {
         $user = User::find($id);
         if ($user) {
             $user->syncRoles($request->roles);
             return $this->jsonMessage('Roles changed successfully!');
+        }
+        return $this->jsonError('Sorry! User not found');
+    }
+
+    public function changePermission($id, Request $request)
+    {
+        $user = User::find($id);
+        if ($user) {
+            $user->syncPermissions($request->permission);
+            return $this->jsonMessage('Permission changed successfully!');
         }
         return $this->jsonError('Sorry! User not found');
     }

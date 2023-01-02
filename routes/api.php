@@ -41,8 +41,9 @@ Route::group([
     //User
     // manager_user quyền quản lí user
     Route::group(['middleware' => 'can:manager_user'], function () {
-        Route::resource('user', UserController::class);
+        Route::resource('user', UserController::class)->middleware('can:quyen_xem_dsnhanvien'); // quyen xem danh sách nhan viên
         Route::post('user/change-role/{id}', [UserController::class, 'changeRole']);
+        Route::post('user/change-permission/{id}', [UserController::class, 'changePermission']);
         Route::resource('user-detail', UserDetailController::class);
     });
 
@@ -55,13 +56,13 @@ Route::group([
     });
 
     //Role
-    Route::group(['middleware' => 'can:manager_role'], function () {
-        Route::get('role', [RolesController::class, 'list']);
+//    Route::group(['middleware' => 'can:manager_role'], function () {
+        Route::get('role', [RolesController::class, 'list'])->middleware('can:quyen_xem_dsrole');
         Route::post('role/create', [RolesController::class, 'store']);
         Route::get('role/{id}', [RolesController::class, 'show']);
         Route::delete('role/delete/{id}', [RolesController::class, 'delete']);
         Route::post('role/change-permission/{id}', [RolesController::class, 'changePermissions']);
-    });
+//    });
 
     //Post category
     Route::group(['middleware' => 'can:manager_post_category'], function () {
